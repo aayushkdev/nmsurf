@@ -10,6 +10,7 @@ type Network struct {
 	Freq     int
 	BSSID    string
 	Channel  int
+	Saved    bool
 }
 
 func DeduplicateNetworks(networks []Network) []Network {

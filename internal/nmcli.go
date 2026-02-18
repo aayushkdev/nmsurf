@@ -8,6 +8,11 @@ import (
 
 func ScanNetworks() ([]Network, error) {
 
+	savedMap, err := getSavedConnections()
+	if err != nil {
+		return nil, err
+	}
+
 	cmd := exec.Command(
 		"nmcli",
 		"-t",
@@ -62,10 +67,40 @@ func ScanNetworks() ([]Network, error) {
 			Security: security,
 			Freq:     freq,
 			Channel:  channel,
+			Saved:    savedMap[ssid],
 		})
 	}
 
 	return networks, nil
+}
+
+func getSavedConnections() (map[string]bool, error) {
+
+	cmd := exec.Command(
+		"nmcli",
+		"-t",
+		"-f",
+		"NAME",
+		"connection",
+		"show",
+	)
+
+	out, err := cmd.Output()
+	if err != nil {
+		return nil, err
+	}
+
+	saved := make(map[string]bool)
+
+	lines := strings.Split(string(out), "\n")
+
+	for _, line := range lines {
+		if line != "" {
+			saved[line] = true
+		}
+	}
+
+	return saved, nil
 }
 
 func Connect(bssid string) error {
