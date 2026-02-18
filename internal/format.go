@@ -11,32 +11,35 @@ func FreqToBand(freq int) string {
 	return fmt.Sprintf("%.1f GHz", ghz)
 }
 
-func SignalIcon(signal int, saved bool, connected bool) string {
+func SignalIcon(signal int, saved bool, secured bool) string {
 
-	if connected && saved {
-		switch {
-		case signal >= 80:
-			return "󰤨 "
-		case signal >= 60:
-			return "󰤥 "
-		case signal >= 40:
-			return "󰤢 "
-		case signal >= 20:
-			return "󰤟 "
-		default:
-			return "󰤫 "
-		}
-	}
+	locked := secured && !saved
 
 	switch {
 	case signal >= 80:
-		return "󰤪 "
+		if locked {
+			return "󰤪 "
+		}
+		return "󰤨 "
+
 	case signal >= 60:
-		return "󰤧 "
+		if locked {
+			return "󰤧 "
+		}
+		return "󰤥 "
+
 	case signal >= 40:
-		return "󰤤 "
+		if locked {
+			return "󰤤 "
+		}
+		return "󰤢 "
+
 	case signal >= 20:
-		return "󰤡 "
+		if locked {
+			return "󰤡 "
+		}
+		return "󰤟 "
+
 	default:
 		return "󰤫 "
 	}
@@ -49,18 +52,12 @@ func FormatNetwork(n Network) string {
 		check = "󰄬 "
 	}
 
-	lock := ""
-	if n.Security != "" {
-		lock = "󰌾"
-	}
-
 	return fmt.Sprintf(
-		"%s%s %s %s  %s",
-		check,
-		SignalIcon(n.Signal, n.Saved, n.InUse),
+		"%s  %s %s  %s",
+		SignalIcon(n.Signal, n.Saved, n.Secured),
 		n.SSID,
 		FreqToBand(n.Freq),
-		lock,
+		check,
 	)
 }
 
