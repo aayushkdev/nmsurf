@@ -59,6 +59,8 @@ func ScanNetworks() ([]Network, error) {
 
 		bssid := strings.Join(fields[len(fields)-6:], ":")
 
+		secured := security != ""
+
 		networks = append(networks, Network{
 			InUse:    inUse,
 			SSID:     ssid,
@@ -68,6 +70,7 @@ func ScanNetworks() ([]Network, error) {
 			Freq:     freq,
 			Channel:  channel,
 			Saved:    savedMap[ssid],
+			Secured:  secured,
 		})
 	}
 
@@ -103,15 +106,29 @@ func getSavedConnections() (map[string]bool, error) {
 	return saved, nil
 }
 
-func Connect(bssid string) error {
+func Connect(bssid string, password string) error {
 
-	cmd := exec.Command(
-		"nmcli",
-		"device",
-		"wifi",
-		"connect",
-		bssid,
-	)
+	var cmd *exec.Cmd
+
+	if password == "" {
+		cmd = exec.Command(
+			"nmcli",
+			"device",
+			"wifi",
+			"connect",
+			bssid,
+		)
+	} else {
+		cmd = exec.Command(
+			"nmcli",
+			"device",
+			"wifi",
+			"connect",
+			bssid,
+			"password",
+			password,
+		)
+	}
 
 	return cmd.Run()
 }

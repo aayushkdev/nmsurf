@@ -11,6 +11,7 @@ type Network struct {
 	BSSID    string
 	Channel  int
 	Saved    bool
+	Secured  bool
 }
 
 func DeduplicateNetworks(networks []Network) []Network {

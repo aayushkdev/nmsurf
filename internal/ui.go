@@ -45,3 +45,24 @@ func ShowMenu(options []string, prompt string) (string, error) {
 
 	return "", nil
 }
+
+func PromptPassword(ssid string) (string, error) {
+
+	cmd := exec.Command(
+		"wofi",
+		"--dmenu",
+		"--prompt", "Password for "+ssid,
+		"--password",
+	)
+
+	var out bytes.Buffer
+	cmd.Stdout = &out
+
+	err := cmd.Run()
+
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(out.String()), nil
+}

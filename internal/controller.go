@@ -75,7 +75,21 @@ func (c *Controller) networkMenu(n *Network) {
 		switch choice {
 
 		case "Connect":
-			Connect(n.BSSID)
+
+			if n.Secured && !n.Saved {
+
+				pass, err := PromptPassword(n.SSID)
+				if err != nil || pass == "" {
+					return
+				}
+
+				Connect(n.BSSID, pass)
+
+			} else {
+
+				Connect(n.BSSID, "")
+			}
+
 			return
 
 		case "Disconnect":
