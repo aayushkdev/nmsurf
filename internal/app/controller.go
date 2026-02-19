@@ -101,7 +101,7 @@ func (c *Controller) Run() error {
 			)
 		}
 
-		options = append(options, "|󰑐  Rescan")
+		options = append(options, ui.RescanID+"|󰑐  Rescan")
 		choice, err := ui.ShowMenu(options, "Networks")
 
 		if err != nil {
