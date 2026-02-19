@@ -136,7 +136,7 @@ bind = SUPER, N, exec, nmsurf
 
 ---
 
-wofi or any launcher based menu (except maybe rofi) does not expose any way to refresh the state of the menu without reloading it, so the ux may not be par with a tui or a gui based tool
+wofi or any launcher based menu (except maybe rofi) does not expose any way to refresh the state of the menu without killing it and bringing it back up, so the ux may not be par with a tui or a gui based tool
 
 ---
 

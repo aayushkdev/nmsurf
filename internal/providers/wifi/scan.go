@@ -25,7 +25,7 @@ func (p *Provider) Scan(hard bool) ([]core.Network, error) {
 		"-t",
 		"-e", "no",
 		"-f",
-		"IN-USE,SSID,SIGNAL,SECURITY,FREQ,CHAN,BSSID",
+		"IN-USE,SSID,SIGNAL,SECURITY,FREQ,CHAN,DEVICE,BSSID",
 		"device",
 		"wifi",
 		"list",
@@ -48,7 +48,7 @@ func (p *Provider) Scan(hard bool) ([]core.Network, error) {
 
 		fields := strings.Split(line, ":")
 
-		if len(fields) < 7 {
+		if len(fields) < 8 {
 			continue
 		}
 
@@ -74,15 +74,15 @@ func (p *Provider) Scan(hard bool) ([]core.Network, error) {
 			continue
 		}
 
-		// BSSID is everything remaining
-		bssid := strings.Join(fields[6:], ":")
+		device := fields[6]
+		bssid := fields[7]
 
 		networks = append(networks, core.Network{
-
 			Type: core.TypeWiFi,
 
-			SSID:  ssid,
-			BSSID: bssid,
+			SSID:      ssid,
+			BSSID:     bssid,
+			Interface: device,
 
 			Signal: signal,
 

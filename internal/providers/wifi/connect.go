@@ -34,9 +34,9 @@ func (p *Provider) Disconnect(n core.Network) error {
 
 	return exec.Command(
 		"nmcli",
-		"connection",
-		"down",
-		n.BSSID,
+		"device",
+		"disconnect",
+		n.Interface,
 	).Run()
 }
 
