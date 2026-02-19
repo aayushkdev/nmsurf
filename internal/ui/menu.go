@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"bytes"
-	"os/exec"
 	"strings"
 )
 
@@ -26,39 +24,13 @@ func ShowMenu(options []string, prompt string) (string, error) {
 		}
 	}
 
-	cmd := exec.Command(
-		"wofi",
-		"--dmenu",
-		"--prompt", prompt,
-	)
-
-	cmd.Stdin = strings.NewReader(
-		strings.Join(display, "\n"),
-	)
-
-	var out bytes.Buffer
-
-	cmd.Stdout = &out
-
-	err := cmd.Run()
-
+	selected, err := runLauncher(prompt, display, false)
 	if err != nil {
-
-		if exitErr, ok := err.(*exec.ExitError); ok &&
-			exitErr.ExitCode() == 10 {
-
-			return "", nil
-		}
-
 		return "", err
 	}
 
-	selected := strings.TrimSpace(out.String())
-
 	for i, d := range display {
-
 		if d == selected {
-
 			return options[i], nil
 		}
 	}
@@ -68,22 +40,9 @@ func ShowMenu(options []string, prompt string) (string, error) {
 
 func PromptPassword(name string) (string, error) {
 
-	cmd := exec.Command(
-		"wofi",
-		"--dmenu",
-		"--prompt", "Password for "+name,
-		"--password",
+	return runLauncher(
+		"Password for "+name,
+		nil,
+		true,
 	)
-
-	var out bytes.Buffer
-
-	cmd.Stdout = &out
-
-	err := cmd.Run()
-
-	if err != nil {
-		return "", err
-	}
-
-	return strings.TrimSpace(out.String()), nil
 }
