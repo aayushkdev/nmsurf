@@ -32,10 +32,37 @@ func FormatNetwork(n core.Network, busy bool) string {
 
 func FormatNetworkMenu(n core.Network) []string {
 
-	if n.Connected {
+	switch n.Type {
+
+	case core.TypeEthernet:
+
+		if n.Connected {
+			return []string{
+				"Disconnect",
+				"Details",
+				"Back",
+			}
+		}
 
 		return []string{
-			"Disconnect",
+			"Connect",
+			"Details",
+			"Back",
+		}
+
+	case core.TypeWiFi:
+
+		if n.Connected {
+			return []string{
+				"Disconnect",
+				"Forget",
+				"Details",
+				"Back",
+			}
+		}
+
+		return []string{
+			"Connect",
 			"Forget",
 			"Details",
 			"Back",
@@ -43,8 +70,6 @@ func FormatNetworkMenu(n core.Network) []string {
 	}
 
 	return []string{
-		"Connect",
-		"Forget",
 		"Details",
 		"Back",
 	}

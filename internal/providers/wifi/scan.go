@@ -1,7 +1,6 @@
 package wifi
 
 import (
-	"fmt"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -29,7 +28,6 @@ func (p *Provider) Scan() ([]core.Network, error) {
 	)
 
 	out, err := cmd.Output()
-	fmt.Println(string(out))
 	if err != nil {
 		return nil, err
 	}

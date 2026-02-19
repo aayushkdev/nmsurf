@@ -41,10 +41,19 @@ func (n Network) UniqueID() string {
 	case TypeWiFi:
 		return n.BSSID
 
-	default:
-		return ""
+	case TypeEthernet:
+		return n.Interface
+
+	case TypeVPN:
+		return n.UUID
+
+	case TypeBluetooth:
+		return n.Interface
 	}
+
+	return ""
 }
+
 
 func (n Network) DisplayName() string {
 
@@ -53,10 +62,17 @@ func (n Network) DisplayName() string {
 	case TypeWiFi:
 		return n.SSID
 
-	default:
-		return ""
+	case TypeEthernet:
+		return n.Interface
 
+	case TypeVPN:
+		return n.UUID
+
+	case TypeBluetooth:
+		return n.Interface
 	}
+
+	return ""
 }
 
 func FreqToBand(freq int) string {
