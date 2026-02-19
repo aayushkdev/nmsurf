@@ -54,7 +54,6 @@ func (n Network) UniqueID() string {
 	return ""
 }
 
-
 func (n Network) DisplayName() string {
 
 	switch n.Type {
@@ -79,13 +78,13 @@ func FreqToBand(freq int) string {
 
 	switch {
 	case freq >= 2400 && freq < 2500:
-		return "2.4"
+		return "2.4 GHz"
 
 	case freq >= 4900 && freq < 5900:
-		return "5"
+		return "5 GHz"
 
 	case freq >= 5900 && freq < 7125:
-		return "6"
+		return "6 GHz"
 
 	default:
 		return ""

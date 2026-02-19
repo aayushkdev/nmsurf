@@ -1,6 +1,7 @@
 package app
 
 import (
+	"os/exec"
 	"strings"
 	"sync"
 	"time"
@@ -15,6 +16,7 @@ type Controller struct {
 	cached     []core.Network
 	mutex      sync.RWMutex
 	rescanning bool
+	wifiOn     bool
 }
 
 func NewController(p []core.Provider) *Controller {
@@ -22,6 +24,13 @@ func NewController(p []core.Provider) *Controller {
 	c := &Controller{
 		providers: p,
 		busy:      make(map[string]bool),
+	}
+
+	// determine initial wifi radio state (nmcli returns "enabled"/"disabled")
+	if out, err := exec.Command("nmcli", "radio", "wifi").Output(); err == nil {
+		c.wifiOn = strings.TrimSpace(string(out)) == "enabled"
+	} else {
+		c.wifiOn = true
 	}
 
 	// Initial scan
@@ -82,14 +91,9 @@ func (c *Controller) Run() error {
 
 		networks := c.getCached()
 
-		if len(networks) == 0 {
-
-			time.Sleep(200 * time.Millisecond)
-
-			continue
-		}
-
-		options := make([]string, 0, len(networks)+1)
+		// top fixed: WiFi toggle
+		options := make([]string, 0, len(networks)+2)
+		options = append(options, ui.WifiToggleID+"|"+ui.FormatWifiToggle(c.wifiOn))
 
 		for i := range networks {
 
@@ -117,12 +121,16 @@ func (c *Controller) Run() error {
 		}
 
 		id := strings.SplitN(choice, "|", 2)[0]
+		switch id {
 
-		if id == ui.RescanID {
+		case ui.WifiToggleID:
+			c.toggleWifi()
+			continue
+
+		case ui.RescanID:
 			c.rescanning = true
 			c.refresh(true)
 			c.rescanning = false
-
 			continue
 		}
 
@@ -224,4 +232,23 @@ func (c *Controller) runAsync(
 			fn(p)
 		}
 	}()
+}
+
+func (c *Controller) toggleWifi() {
+	desired := !c.wifiOn
+
+	var cmd *exec.Cmd
+	if desired {
+		cmd = exec.Command("nmcli", "radio", "wifi", "on")
+	} else {
+		cmd = exec.Command("nmcli", "radio", "wifi", "off")
+	}
+
+	// attempt to toggle, ignore errors but update local state
+	_ = cmd.Run()
+
+	c.wifiOn = desired
+
+	// refresh networks after toggling
+	c.refresh(true)
 }

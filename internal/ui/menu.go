@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	RescanID = "__rescan__"
+	RescanID     = "__rescan__"
+	WifiToggleID = "__wifi_toggle__"
 )
 
 func ShowMenu(options []string, prompt string) (string, error) {

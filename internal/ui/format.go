@@ -120,3 +120,11 @@ func FormatNetworkDetails(n core.Network) []string {
 
 	return lines
 }
+
+func FormatWifiToggle(on bool) string {
+	if on {
+		return "⏻  Wi‑Fi: On"
+	}
+
+	return "⏻  Wi‑Fi: Off"
+}
