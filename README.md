@@ -11,14 +11,16 @@ nmsurf provides a simple interface to manage networks using NetworkManager, with
 
 ### Network List
 
-
+<img width="1920" height="1080" alt="Screenshot-2026-02-19_23:50:54" src="https://github.com/user-attachments/assets/bb648e04-5941-40d5-af71-728e6aff4fe4" />
 
 ### Network Menu
 
+<img width="1920" height="1080" alt="Screenshot-2026-02-19_23:51:17" src="https://github.com/user-attachments/assets/b8af8af8-b996-459c-8184-9fe667b63c3c" />
 
 
 ### Network Details
 
+<img width="1920" height="1080" alt="Screenshot-2026-02-19_23:52:39" src="https://github.com/user-attachments/assets/81f700fd-9a9e-4a41-a96d-3f681bfbcf6f" />
 
 
 ---
