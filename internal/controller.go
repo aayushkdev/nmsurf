@@ -1,26 +1,68 @@
 package internal
 
-import "strings"
+import (
+	"strings"
+	"sync"
+	"time"
+)
 
 type Controller struct {
-	busy map[string]bool
+	busy   map[string]bool
+	cached []Network
+	mutex  sync.RWMutex
 }
 
 func NewController() *Controller {
-	return &Controller{
+
+	c := &Controller{
 		busy: make(map[string]bool),
+	}
+
+	networks, err := ScanNetworks()
+	if err == nil {
+		networks = DeduplicateNetworks(networks)
+		SortNetworks(networks)
+		c.cached = networks
+	}
+
+	go c.scanner()
+
+	return c
+}
+
+func (c *Controller) scanner() {
+
+	for {
+
+		networks, err := ScanNetworks()
+		if err == nil {
+
+			networks = DeduplicateNetworks(networks)
+			SortNetworks(networks)
+
+			c.mutex.Lock()
+			c.cached = networks
+			c.mutex.Unlock()
+		}
+
+		time.Sleep(2 * time.Second)
 	}
 }
 
 func (c *Controller) Run() error {
-	for {
-		networks, err := ScanNetworks()
-		if err != nil {
-			return err
-		}
 
-		networks = DeduplicateNetworks(networks)
-		SortNetworks(networks)
+	for {
+
+		c.mutex.RLock()
+
+		networks := make([]Network, len(c.cached))
+		copy(networks, c.cached)
+		c.mutex.RUnlock()
+
+		if len(networks) == 0 {
+			time.Sleep(100 * time.Millisecond)
+			continue
+		}
 
 		options := make([]string, len(networks))
 
@@ -48,17 +90,11 @@ func (c *Controller) Run() error {
 
 		bssid := parts[0]
 
-		var selected *Network
-
 		for i := range networks {
 			if networks[i].BSSID == bssid {
-				selected = &networks[i]
+				c.networkMenu(&networks[i])
 				break
 			}
-		}
-
-		if selected != nil {
-			c.networkMenu(selected)
 		}
 	}
 }

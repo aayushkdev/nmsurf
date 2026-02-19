@@ -22,6 +22,7 @@ func ScanNetworks() ([]Network, error) {
 		"device",
 		"wifi",
 		"list",
+		"--rescan", "no",
 	)
 
 	out, err := cmd.Output()
