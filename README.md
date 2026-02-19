@@ -2,7 +2,7 @@
 
 A fast, minimal NetworkManager frontend for application launchers, written in Go.
 
-nmsurf provides a simple interface to manage networks using NetworkManager, with support for launcher-based menus such as wofi and rofi.
+nmsurf provides a simple interface to manage networks using NetworkManager, with support for launcher-based menus such as wofi.
 
 ---
 
@@ -31,7 +31,11 @@ nmsurf provides a simple interface to manage networks using NetworkManager, with
 * Connect, disconnect, and forget networks
 * Hard rescan (hardware scan)
 * View detailed network information
-* Supports both rofi and wofi launchers
+* Supports:
+    * Wofi
+    * Rofi
+    * Walker
+    * Fuzzel
 * Use your existing launcher theme or specify a custom theme
 * Fast and lightweight
 
@@ -41,14 +45,14 @@ nmsurf provides a simple interface to manage networks using NetworkManager, with
 
 ### Prerequisites
 
-* Wofi/rofi
+* wofi, rofi, fuzzel or walker
 * NetworkManager
 * Go 1.20+ (build only/go install)
 
 
 ### Option 1: Arch User Repository (AUR)
 
-For Arch Linux users, nmsurd is available in the AUR. This is the recommended method for easy installation and updates.
+For Arch Linux users, nmsurf is available in the AUR. This is the recommended method for easy installation and updates.
 
 You can use any AUR helper like yay, paru, etc.
 
@@ -110,13 +114,7 @@ Example:
 launcher = "wofi"
 theme = "~/.config/wofi/style.css"
 ```
-
-Or using rofi:
-
-```toml
-launcher = "rofi"
-theme = "~/.config/rofi/network.rasi"
-```
+valid launchers include `wofi`, `rofi`, `walker`, `fuzzel`
 
 If no config file exists, defaults are used (wofi)
 
@@ -135,6 +133,10 @@ Bind to key (Hyprland example):
 ```
 bind = SUPER, N, exec, nmsurf
 ```
+
+---
+
+wofi or any launcher based menu (except maybe rofi) does not expose any way to refresh the state of the menu without reloading it, so the ux may not be par with a tui or a gui based tool
 
 ---
 
