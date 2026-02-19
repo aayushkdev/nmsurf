@@ -1,15 +1,18 @@
 package main
 
 import (
-	"log"
-	"github.com/aayushkdev/nmsurf/internal"
+	"github.com/aayushkdev/nmsurf/internal/app"
+	"github.com/aayushkdev/nmsurf/internal/core"
+	"github.com/aayushkdev/nmsurf/internal/providers/wifi"
 )
 
 func main() {
 
-	app := internal.NewController()
+	controller := app.NewController(
+		[]core.Provider{
+			wifi.New(),
+		},
+	)
 
-	if err := app.Run(); err != nil {
-		log.Fatal(err)
-	}
+	controller.Run()
 }

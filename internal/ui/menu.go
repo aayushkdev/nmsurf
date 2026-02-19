@@ -1,4 +1,4 @@
-package internal
+package ui
 
 import (
 	"bytes"
@@ -12,23 +12,36 @@ func ShowMenu(options []string, prompt string) (string, error) {
 
 	for i, opt := range options {
 
-		if parts := strings.SplitN(opt, "|", 2); len(parts) == 2 {
+		parts := strings.SplitN(opt, "|", 2)
+
+		if len(parts) == 2 {
 			display[i] = parts[1]
 		} else {
 			display[i] = opt
 		}
 	}
 
-	cmd := exec.Command("wofi", "--dmenu", "--prompt", prompt)
-	cmd.Stdin = strings.NewReader(strings.Join(display, "\n"))
+	cmd := exec.Command(
+		"wofi",
+		"--dmenu",
+		"--prompt", prompt,
+	)
+
+	cmd.Stdin = strings.NewReader(
+		strings.Join(display, "\n"),
+	)
 
 	var out bytes.Buffer
+
 	cmd.Stdout = &out
 
-	if err := cmd.Run(); err != nil {
+	err := cmd.Run()
+
+	if err != nil {
 
 		if exitErr, ok := err.(*exec.ExitError); ok &&
 			exitErr.ExitCode() == 10 {
+
 			return "", nil
 		}
 
@@ -38,7 +51,9 @@ func ShowMenu(options []string, prompt string) (string, error) {
 	selected := strings.TrimSpace(out.String())
 
 	for i, d := range display {
-		if strings.TrimSpace(d) == selected {
+
+		if d == selected {
+
 			return options[i], nil
 		}
 	}
@@ -46,16 +61,17 @@ func ShowMenu(options []string, prompt string) (string, error) {
 	return "", nil
 }
 
-func PromptPassword(ssid string) (string, error) {
+func PromptPassword(name string) (string, error) {
 
 	cmd := exec.Command(
 		"wofi",
 		"--dmenu",
-		"--prompt", "Password for "+ssid,
+		"--prompt", "Password for "+name,
 		"--password",
 	)
 
 	var out bytes.Buffer
+
 	cmd.Stdout = &out
 
 	err := cmd.Run()
