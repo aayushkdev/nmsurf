@@ -53,7 +53,7 @@ For Arch Linux users, nmsurd is available in the AUR. This is the recommended me
 You can use any AUR helper like yay, paru, etc.
 
 ```bash
-yay -S torrcli
+yay -S nmsurf
 ```
 
 ---
