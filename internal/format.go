@@ -45,19 +45,33 @@ func SignalIcon(signal int, saved bool, secured bool) string {
 	}
 }
 
-func FormatNetwork(n Network) string {
+func FormatNetwork(n Network, busy bool) string {
 
-	check := "  "
+	icon := SignalIcon(n.Signal, n.Saved, n.Secured)
+
+	if busy {
+		return fmt.Sprintf(
+			"%s %s %s ⟳",
+			icon,
+			n.SSID,
+			FreqToBand(n.Freq),
+		)
+	}
+
 	if n.InUse {
-		check = "󰄬 "
+		return fmt.Sprintf(
+			"%s %s %s 󰄬",
+			icon,
+			n.SSID,
+			FreqToBand(n.Freq),
+		)
 	}
 
 	return fmt.Sprintf(
-		"%s  %s %s  %s",
-		SignalIcon(n.Signal, n.Saved, n.Secured),
+		"%s %s %s",
+		icon,
 		n.SSID,
 		FreqToBand(n.Freq),
-		check,
 	)
 }
 

@@ -108,51 +108,43 @@ func getSavedConnections() (map[string]bool, error) {
 
 func Connect(bssid string, password string) error {
 
-	var cmd *exec.Cmd
-
 	if password == "" {
-		cmd = exec.Command(
+		return exec.Command(
 			"nmcli",
 			"device",
 			"wifi",
 			"connect",
 			bssid,
-		)
-	} else {
-		cmd = exec.Command(
-			"nmcli",
-			"device",
-			"wifi",
-			"connect",
-			bssid,
-			"password",
-			password,
-		)
+		).Run()
 	}
 
-	return cmd.Run()
+	return exec.Command(
+		"nmcli",
+		"device",
+		"wifi",
+		"connect",
+		bssid,
+		"password",
+		password,
+	).Run()
 }
 
 func Disconnect(ssid string) error {
 
-	cmd := exec.Command(
+	return exec.Command(
 		"nmcli",
 		"connection",
 		"down",
 		ssid,
-	)
-
-	return cmd.Run()
+	).Run()
 }
 
 func Forget(ssid string) error {
 
-	cmd := exec.Command(
+	return exec.Command(
 		"nmcli",
 		"connection",
 		"delete",
 		ssid,
-	)
-
-	return cmd.Run()
+	).Run()
 }

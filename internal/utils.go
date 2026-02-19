@@ -3,15 +3,16 @@ package internal
 import "sort"
 
 type Network struct {
-	InUse    bool
-	SSID     string
-	Signal   int
-	Security string
-	Freq     int
-	BSSID    string
-	Channel  int
-	Saved    bool
-	Secured  bool
+	InUse      bool
+	SSID       string
+	Signal     int
+	Security   string
+	Freq       int
+	BSSID      string
+	Channel    int
+	Saved      bool
+	Secured    bool
+	Connecting bool
 }
 
 func DeduplicateNetworks(networks []Network) []Network {
