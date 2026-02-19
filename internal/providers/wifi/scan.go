@@ -8,11 +8,16 @@ import (
 	"github.com/aayushkdev/nmsurf/internal/core"
 )
 
-func (p *Provider) Scan() ([]core.Network, error) {
+func (p *Provider) Scan(hard bool) ([]core.Network, error) {
 
 	saved, err := getSavedSSIDs()
 	if err != nil {
 		return nil, err
+	}
+
+	rescanArg := "no"
+	if hard {
+		rescanArg = "yes"
 	}
 
 	cmd := exec.Command(
@@ -24,7 +29,7 @@ func (p *Provider) Scan() ([]core.Network, error) {
 		"device",
 		"wifi",
 		"list",
-		"--rescan", "no",
+		"--rescan", rescanArg,
 	)
 
 	out, err := cmd.Output()

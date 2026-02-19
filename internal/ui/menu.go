@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+const (
+	RescanID = "__rescan__"
+)
+
 func ShowMenu(options []string, prompt string) (string, error) {
 
 	display := make([]string, len(options))

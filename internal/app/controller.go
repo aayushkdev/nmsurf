@@ -10,17 +10,11 @@ import (
 )
 
 type Controller struct {
-
-	// Registered providers
-	providers []core.Provider
-
-	// Tracks busy operations
-	busy map[string]bool
-
-	// Cached network list
-	cached []core.Network
-
-	mutex sync.RWMutex
+	providers  []core.Provider
+	busy       map[string]bool
+	cached     []core.Network
+	mutex      sync.RWMutex
+	rescanning bool
 }
 
 func NewController(p []core.Provider) *Controller {
@@ -31,9 +25,8 @@ func NewController(p []core.Provider) *Controller {
 	}
 
 	// Initial scan
-	c.refresh()
+	c.refresh(false)
 
-	// Background scanner
 	go c.scanner()
 
 	return c
@@ -45,17 +38,17 @@ func (c *Controller) scanner() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		c.refresh()
+		c.refresh(false)
 	}
 }
 
-func (c *Controller) refresh() {
+func (c *Controller) refresh(hard bool) {
 
 	var networks []core.Network
 
 	for _, provider := range c.providers {
 
-		n, err := provider.Scan()
+		n, err := provider.Scan(hard)
 		if err != nil {
 			continue
 		}
@@ -64,7 +57,6 @@ func (c *Controller) refresh() {
 	}
 
 	networks = core.DeduplicateNetworks(networks)
-
 	core.SortNetworks(networks)
 
 	c.mutex.Lock()
@@ -97,19 +89,19 @@ func (c *Controller) Run() error {
 			continue
 		}
 
-		options := make([]string, len(networks))
+		options := make([]string, 0, len(networks)+1)
 
 		for i := range networks {
 
 			id := networks[i].UniqueID()
-
 			busy := c.busy[id]
 
-			options[i] =
-				id + "|" +
-					ui.FormatNetwork(networks[i], busy)
+			options = append(options,
+				id+"|"+ui.FormatNetwork(networks[i], busy),
+			)
 		}
 
+		options = append(options, "|󰑐  Rescan")
 		choice, err := ui.ShowMenu(options, "Networks")
 
 		if err != nil {
@@ -117,7 +109,6 @@ func (c *Controller) Run() error {
 		}
 
 		if choice == "" {
-
 			if len(c.busy) > 0 {
 				continue
 			}
@@ -126,6 +117,14 @@ func (c *Controller) Run() error {
 		}
 
 		id := strings.SplitN(choice, "|", 2)[0]
+
+		if id == ui.RescanID {
+			c.rescanning = true
+			c.refresh(true)
+			c.rescanning = false
+
+			continue
+		}
 
 		for i := range networks {
 

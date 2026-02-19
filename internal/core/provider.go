@@ -3,7 +3,7 @@ package core
 type Provider interface {
 	Type() NetworkType
 
-	Scan() ([]Network, error)
+	Scan(hard bool) ([]Network, error)
 
 	Connect(network Network, password string) error
 

@@ -7,7 +7,7 @@ import (
 	"github.com/aayushkdev/nmsurf/internal/core"
 )
 
-func (p *Provider) Scan() ([]core.Network, error) {
+func (p *Provider) Scan(hard bool) ([]core.Network, error) {
 
 	cmd := exec.Command(
 		"nmcli",
