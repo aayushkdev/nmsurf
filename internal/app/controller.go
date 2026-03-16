@@ -75,6 +75,21 @@ func (c *Controller) getCached() []core.Network {
 	return out
 }
 
+// waitFor blocks until the busy flag for the given id is cleared,
+// then performs a hard refresh so cached state is up-to-date.
+func (c *Controller) waitFor(id string) {
+	for {
+		c.mutex.RLock()
+		busy := c.busy[id]
+		c.mutex.RUnlock()
+		if !busy {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+	c.refresh(true)
+}
+
 func (c *Controller) Run() error {
 	for {
 		networks := c.getCached()
@@ -84,8 +99,7 @@ func (c *Controller) Run() error {
 
 		for i := range networks {
 			id := networks[i].UniqueID()
-			busy := c.busy[id]
-			options = append(options, id+"|"+ui.FormatNetwork(networks[i], busy))
+			options = append(options, id+"|"+ui.FormatNetwork(networks[i]))
 		}
 
 		options = append(options, ui.RescanID+"|󰑐  Rescan")
@@ -151,19 +165,44 @@ func (c *Controller) networkMenu(n *core.Network) {
 			c.runAsync(n, func(p core.Provider) {
 				p.Connect(*n, password)
 			})
-			return
+			// wait for operation to finish, refresh cache and update local network
+			c.waitFor(n.UniqueID())
+			networks := c.getCached()
+			for i := range networks {
+				if networks[i].UniqueID() == n.UniqueID() {
+					*n = networks[i]
+					break
+				}
+			}
+			continue
 
 		case "Disconnect":
 			c.runAsync(n, func(p core.Provider) {
 				p.Disconnect(*n)
 			})
-			return
+			c.waitFor(n.UniqueID())
+			networks := c.getCached()
+			for i := range networks {
+				if networks[i].UniqueID() == n.UniqueID() {
+					*n = networks[i]
+					break
+				}
+			}
+			continue
 
 		case "Forget":
 			c.runAsync(n, func(p core.Provider) {
 				p.Forget(*n)
 			})
-			return
+			c.waitFor(n.UniqueID())
+			networks := c.getCached()
+			for i := range networks {
+				if networks[i].UniqueID() == n.UniqueID() {
+					*n = networks[i]
+					break
+				}
+			}
+			continue
 
 		case "Details":
 			ui.ShowMenu(ui.FormatNetworkDetails(*n), "Details")

@@ -80,11 +80,7 @@ func networkIcon(n core.Network) string {
 	return "󰈂  "
 }
 
-func statusIcon(n core.Network, busy bool) string {
-
-	if busy {
-		return " ⟳"
-	}
+func statusIcon(n core.Network) string {
 
 	if n.Connected {
 		return " 󰄬"

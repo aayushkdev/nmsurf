@@ -7,7 +7,7 @@ import (
 	"github.com/aayushkdev/nmsurf/internal/core"
 )
 
-func FormatNetwork(n core.Network, busy bool) string {
+func FormatNetwork(n core.Network) string {
 
 	var parts []string
 
@@ -23,7 +23,7 @@ func FormatNetwork(n core.Network, busy bool) string {
 		}
 	}
 
-	if icon := statusIcon(n, busy); icon != "" {
+	if icon := statusIcon(n); icon != "" {
 		parts = append(parts, icon)
 	}
 
