@@ -23,7 +23,7 @@ func (p *Provider) Scan(hard bool) ([]core.Network, error) {
 	cmd := exec.Command(
 		"nmcli",
 		"-t",
-		"-e", "no",
+		"-e", "yes",
 		"-f",
 		"IN-USE,SSID,SIGNAL,SECURITY,FREQ,CHAN,DEVICE,BSSID",
 		"device",
@@ -46,7 +46,7 @@ func (p *Provider) Scan(hard bool) ([]core.Network, error) {
 			continue
 		}
 
-		fields := strings.Split(line, ":")
+		fields := splitNmcliFields(line)
 
 		if len(fields) < 8 {
 			continue
