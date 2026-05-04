@@ -147,7 +147,7 @@ func (c *Controller) networkMenu(n *core.Network) {
 		}
 
 		if choice == "" {
-			continue
+			return
 		}
 
 		switch choice {
@@ -228,6 +228,9 @@ func (c *Controller) runAsync(n *core.Network, fn func(core.Provider)) {
 		}()
 
 		for _, p := range c.providers {
+			if p.Type() != n.Type {
+				continue
+			}
 			fn(p)
 		}
 	}()

@@ -53,20 +53,36 @@ func FormatNetworkMenu(n core.Network) []string {
 	case core.TypeWiFi:
 
 		if n.Connected {
-			return []string{
+			options := []string{
 				"Disconnect",
+				"Details",
+				"Back",
+			}
+			if n.Saved {
+				options = []string{
+					"Disconnect",
+					"Forget",
+					"Details",
+					"Back",
+				}
+			}
+			return options
+		}
+
+		options := []string{
+			"Connect",
+			"Details",
+			"Back",
+		}
+		if n.Saved {
+			options = []string{
+				"Connect",
 				"Forget",
 				"Details",
 				"Back",
 			}
 		}
-
-		return []string{
-			"Connect",
-			"Forget",
-			"Details",
-			"Back",
-		}
+		return options
 	}
 
 	return []string{
